@@ -5,6 +5,7 @@ import multer from 'multer' /* multer */
 import slugify from 'slugify'
 import * as db from '../db/models/index.js'
 import * as userServices from '../services/user.service.js'
+import * as storyServices from '../services/story.service.js'
 import * as tokenServices from '../services/tokens.service.js'
 import imageFilter from '../helpers/imageFilter.js'
 
@@ -130,7 +131,8 @@ export const createStory = async (req, res) => {
 
   /* create a new story */
   try {
-    await db.Story.create(payload)
+    // await db.Story.create(payload)
+    await storyServices.createANewStory(payload)
     return res.status(201).json({
       errCode: 0,
       status: 'OK',
