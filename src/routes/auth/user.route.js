@@ -13,6 +13,7 @@ router.post('/register/author', userControllers.registerUser)
 
 router.get('/profile', verifyAccessToken, userControllers.getProfile)
 
+/* story */
 router.post(
   '/upload/story',
   verifyAccessToken,
@@ -21,6 +22,20 @@ router.post(
   userControllers.createStory
 )
 
-router.post('/upload/story/chapter', verifyAccessToken, userControllers.createChapter)
+router.patch(
+  '/patch/story/:id',
+  verifyAccessToken,
+  userControllers.checkAuthor,
+  userControllers.handleErrorImageUpload,
+  userControllers.editStory
+)
+router.delete('/delete/story/:id')
+
+/* chapter */
+router.post(
+  '/upload/story/chapter',
+  verifyAccessToken,
+  userControllers.createChapter
+)
 
 export default router

@@ -143,12 +143,34 @@ export const createStory = async (req, res) => {
   }
 }
 
-export const removeStory = async (req, res) => {
-  return res.json({ message: 'remove story' })
+export const editStory = async (req, res) => {
+  const imageStringBase64 = req.file.buffer.toString('base64')
+
+  const payload = {
+    storySlug: slugify(req.body.storyName),
+    storyImage: imageStringBase64,
+    storyName: req.body.storyName,
+    userId: req.user.sub,
+  }
+
+  /* update story info to db */
+  try {
+    const story = await storyServices.findStoryById(req.params.id)
+    Object.assign(story, payload)
+    await story.save()
+    return res.status(201).json({
+      errCode: 0,
+      status: 'OK',
+      story,
+    })
+  } catch (error) {
+    console.log({ error })
+    return res.sendStatus(500)
+  }
 }
 
-export const editStory = async (req, res) => {
-  return res.json({ message: 'edit story' })
+export const removeStory = async (req, res) => {
+  return res.json({ message: 'remove story' })
 }
 
 export const createChapter = (req, res) => {
