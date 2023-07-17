@@ -29,7 +29,12 @@ router.patch(
   userControllers.handleErrorImageUpload,
   userControllers.editStory
 )
-router.delete('/delete/story/:id')
+router.delete(
+  '/delete/story/:id',
+  verifyAccessToken,
+  userControllers.checkAuthor,
+  userControllers.removeStory
+)
 
 /* chapter */
 router.post(

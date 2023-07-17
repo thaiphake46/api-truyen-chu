@@ -155,14 +155,22 @@ export const editStory = async (req, res) => {
 
   /* update story info to db */
   try {
-    const story = await storyServices.findStoryById(req.params.id)
-    Object.assign(story, payload)
-    await story.save()
-    return res.status(201).json({
-      errCode: 0,
-      status: 'OK',
-      story,
-    })
+    const story = await storyServices.findStoryByIdAndUserId(
+      req.params.id /* id story */,
+      req.user.sub /* id user author */
+    )
+    if (story) {
+      Object.assign(story, payload)
+      await story.save()
+      return res.status(201).json({
+        errCode: 0,
+        status: 'OK',
+      })
+    } else {
+      return res
+        .status(404)
+        .json({ errCode: 1, message: 'Không tìm thấy truyện cần sửa' })
+    }
   } catch (error) {
     console.log({ error })
     return res.sendStatus(500)
@@ -170,7 +178,24 @@ export const editStory = async (req, res) => {
 }
 
 export const removeStory = async (req, res) => {
-  return res.json({ message: 'remove story' })
+  try {
+    /* userId */
+    const story = await storyServices.findStoryByIdAndUserId(
+      req.params.id /* id story */,
+      req.user.sub /* id user author */
+    )
+    if (story) {
+      await story.destroy()
+      return res.status(200).json({ errCode: 0, message: 'OK' })
+    } else {
+      return res
+        .status(404)
+        .json({ errCode: 1, message: 'Không tìm thấy truyện cần xóa' })
+    }
+  } catch (error) {
+    console.log({ error })
+    return res.sendStatus(500)
+  }
 }
 
 export const createChapter = (req, res) => {
