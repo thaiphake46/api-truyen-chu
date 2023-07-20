@@ -209,6 +209,10 @@ export const createChapter = (req, res) => {
   res.json({ user: req.user })
 }
 
+export const getStoryAuthor = (req, res) => {
+  res.send('get story author')
+}
+
 export const handleErrorImageUpload = (req, res, next) => {
   const upload = multer({
     storage: multer.memoryStorage(),
