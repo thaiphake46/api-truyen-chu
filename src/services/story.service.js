@@ -11,3 +11,30 @@ export const findStoryById = async (id, raw = false) => {
 export const findStoryByIdAndUserId = async (id, userId, raw = false) => {
   return await db.Story.findOne({ where: { id, userId }, raw })
 }
+
+export const getStoryPostedByAuthor = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const storyAuthor = await db.User.findOne({
+        where: {
+          id: userId,
+        },
+        attributes: {
+          exclude: ['password', 'createdAt', 'updatedAt'],
+        },
+        include: [
+          {
+            model: db.Story,
+            attributes: {
+              exclude: ['UserId', 'storyImage', 'createdAt'],
+            },
+          },
+        ],
+        nest: true,
+      })
+      resolve(storyAuthor)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}

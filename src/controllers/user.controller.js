@@ -209,8 +209,13 @@ export const createChapter = (req, res) => {
   res.json({ user: req.user })
 }
 
-export const getStoryAuthor = (req, res) => {
-  res.send('get story author')
+export const getStoryPostedByAuthor = async (req, res) => {
+  try {
+    const storyAuthor = await storyServices.getStoryPostedByAuthor(req.user.sub)
+    res.json({ storyAuthor: storyAuthor })
+  } catch (error) {
+    return res.sendStatus(500)
+  }
 }
 
 export const handleErrorImageUpload = (req, res, next) => {

@@ -29,11 +29,18 @@ router.patch(
   userControllers.handleErrorImageUpload,
   userControllers.editStory
 )
+
 router.delete(
   '/delete/story/:id',
   verifyAccessToken,
   userControllers.checkAuthor,
   userControllers.removeStory
+)
+
+router.get(
+  '/getStoryPostedByAuthor',
+  verifyAccessToken,
+  userControllers.getStoryPostedByAuthor
 )
 
 /* chapter */
