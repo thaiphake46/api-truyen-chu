@@ -121,7 +121,9 @@ export const getProfile = async (req, res) => {
 
 export const createStory = async (req, res) => {
   const { storyName } = req.body
-  const imageStringBase64 = req.file.buffer.toString('base64')
+  const imageStringBase64 = `data:${
+    req.file.mimetype
+  };base64,${req.file.buffer.toString('base64')}`
 
   const condition = storyName
   if (!condition) {
