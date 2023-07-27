@@ -1,6 +1,7 @@
 'use strict'
 const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
+  const TABLE_NAME = 'Story'
   class Story extends Model {
     /**
      * Helper method for defining associations.
@@ -13,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'userId',
         as: 'getStoryAuthor',
       })
+      Story.hasMany(models.Chapter)
     }
   }
   Story.init(
@@ -37,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Story',
+      modelName: TABLE_NAME,
     }
   )
   return Story

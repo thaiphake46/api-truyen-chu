@@ -1,6 +1,7 @@
 'use strict'
 const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
+  const TABLE_NAME = 'Chapter'
   class Chapter extends Model {
     /**
      * Helper method for defining associations.
@@ -9,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Chapter.belongsTo(models.Story, {
+        foreignKey: 'storyId',
+        as: 'getChapterByStoryId',
+      })
     }
   }
   Chapter.init(
@@ -37,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Chapter',
+      modelName: TABLE_NAME,
     }
   )
   return Chapter

@@ -1,6 +1,7 @@
 'use strict'
 const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
+  const TABLE_NAME = 'User'
   class User extends Model {
     /**
      * Helper method for defining associations.
@@ -34,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'User',
+      modelName: TABLE_NAME,
     }
   )
   return User

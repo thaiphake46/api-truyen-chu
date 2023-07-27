@@ -1,5 +1,7 @@
 function imageFilter(req, file, cb) {
-  if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$/)) {
+  if (
+    !file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF|webp|WEBP)$/)
+  ) {
     const errMessage = 'Only image files are allowed'
     req.fileValidationError = errMessage
     return cb(new Error(errMessage))

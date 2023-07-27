@@ -120,18 +120,27 @@ export const getProfile = async (req, res) => {
 }
 
 export const createStory = async (req, res) => {
+  const { storyName } = req.body
   const imageStringBase64 = req.file.buffer.toString('base64')
 
+  const condition = storyName
+  if (!condition) {
+    return res.status(400).json({
+      errCode: 1,
+      status: 'Error',
+      message: 'Chưa điền đủ thông tin',
+    })
+  }
+
   const payload = {
-    storySlug: slugify(req.body.storyName),
+    storySlug: slugify(storyName, { lower: true, locale: 'vi' }),
     storyImage: imageStringBase64,
-    storyName: req.body.storyName,
+    storyName: storyName,
     userId: req.user.sub,
   }
 
   /* create a new story */
   try {
-    // await db.Story.create(payload)
     await storyServices.createANewStory(payload)
     return res.status(201).json({
       errCode: 0,
@@ -198,7 +207,7 @@ export const removeStory = async (req, res) => {
   }
 }
 
-export const createChapter = (req, res) => {
+export const createChapter = async (req, res) => {
   /* 
   - chapterSlug
   - chapterNumber
@@ -206,7 +215,34 @@ export const createChapter = (req, res) => {
   - chapterContent
   - storyId
   */
-  res.json({ user: req.user })
+  const { chapterNumber, chapterName, chapterContent, storyId } = req.body
+  const condition = chapterNumber || chapterName || chapterContent || storyId
+  if (!condition) {
+    return res.status(400).json({
+      errCode: 1,
+      status: 'Error',
+      message: 'Chưa điền đủ thông tin',
+    })
+  }
+
+  const payload = {
+    chapterSlug: slugify(chapterName, { lower: true, locale: 'vi' }),
+    chapterNumber: chapterNumber,
+    chapterName: chapterName,
+    chapterContent: chapterContent,
+    storyId: storyId,
+  }
+
+  try {
+    await storyServices.createANewChapter(payload)
+    return res.status(201).json({
+      errCode: 0,
+      status: 'OK',
+    })
+  } catch (error) {
+    console.log({ error })
+    return res.sendStatus(500)
+  }
 }
 
 export const getStoryPostedByAuthor = async (req, res) => {

@@ -1,7 +1,14 @@
 import * as db from '../db/models/index.js'
 
-export const createANewStory = async (payload) => {
-  return await db.Story.create(payload)
+export const createANewStory = (payload) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const story = await db.Story.create(payload)
+      resolve(story)
+    } catch (error) {
+      reject(error)
+    }
+  })
 }
 
 export const findStoryById = async (id, raw = false) => {
@@ -33,6 +40,17 @@ export const getStoryPostedByAuthor = (userId) => {
         nest: true,
       })
       resolve(storyAuthor)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+export const createANewChapter = (payload) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const chapter = await db.Chapter.create(payload)
+      resolve(chapter)
     } catch (error) {
       reject(error)
     }

@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node src/index.js",
-    "db:migrate": "npx sequelize-cli db:migrate"
+    "db:migrate": "npx sequelize-cli db:migrate",
+    "dev": "nodemon --exec babel-node src/index.js",
+    "build": "babel src -d build --copy-files"
   },
   "keywords": [],
   "author": "",
