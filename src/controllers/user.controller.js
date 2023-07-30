@@ -155,7 +155,19 @@ export const createStory = async (req, res) => {
 }
 
 export const editStory = async (req, res) => {
-  const imageStringBase64 = req.file.buffer.toString('base64')
+  const { storyName } = req.body
+  const imageStringBase64 = `data:${
+    req.file.mimetype
+  };base64,${req.file.buffer.toString('base64')}`
+
+  const condition = storyName
+  if (!condition) {
+    return res.status(400).json({
+      errCode: 1,
+      status: 'Error',
+      message: 'Chưa điền đủ thông tin',
+    })
+  }
 
   const payload = {
     storySlug: slugify(req.body.storyName),
@@ -238,6 +250,56 @@ export const createChapter = async (req, res) => {
   try {
     await storyServices.createANewChapter(payload)
     return res.status(201).json({
+      errCode: 0,
+      status: 'OK',
+    })
+  } catch (error) {
+    console.log({ error })
+    return res.sendStatus(500)
+  }
+}
+
+export const editChapter = async (req, res) => {
+  const chapterId = req.params.chapterId
+  const storyId = req.params.storyId
+
+  const { chapterNumber, chapterName, chapterContent } = req.body
+
+  const condition = chapterNumber || chapterName || chapterContent
+  if (!condition) {
+    return res.status(400).json({
+      errCode: 1,
+      status: 'Error',
+      message: 'Chưa điền đủ thông tin',
+    })
+  }
+
+  const payload = {
+    chapterSlug: slugify(chapterName, { lower: true, locale: 'vi' }),
+    chapterNumber: chapterNumber,
+    chapterName: chapterName,
+    chapterContent: chapterContent,
+  }
+
+  try {
+    await storyServices.editChapter(chapterId, storyId, payload)
+    return res.status(200).json({
+      errCode: 0,
+      status: 'OK',
+    })
+  } catch (error) {
+    console.log({ error })
+    return res.sendStatus(500)
+  }
+}
+
+export const removeChapter = async (req, res) => {
+  const chapterId = req.params.chapterId
+  const storyId = req.params.storyId
+
+  try {
+    await storyServices.removeChapter(chapterId, storyId)
+    return res.status(200).json({
       errCode: 0,
       status: 'OK',
     })

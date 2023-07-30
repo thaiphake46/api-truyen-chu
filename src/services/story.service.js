@@ -56,3 +56,31 @@ export const createANewChapter = (payload) => {
     }
   })
 }
+
+export const editChapter = (chapterId, storyId, payload) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const chapter = await db.Chapter.findOne({
+        where: { id: chapterId, storyId },
+      })
+      if (chapter) {
+        Object.assign(chapter, payload)
+        await chapter.save()
+      }
+      resolve(chapter)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+export const removeChapter = (chapterId, storyId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await db.Chapter.destroy({ where: { id: chapterId, storyId } })
+      resolve()
+    } catch (error) {
+      reject(error)
+    }
+  })
+}

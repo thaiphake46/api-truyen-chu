@@ -50,4 +50,18 @@ router.post(
   userControllers.createChapter
 )
 
+router.patch(
+  '/patch/chapter/:storyId/:chapterId',
+  verifyAccessToken,
+  userControllers.checkAuthor,
+  userControllers.editChapter
+)
+
+router.delete(
+  '/delete/chapter/:storyId/:chapterId',
+  verifyAccessToken,
+  userControllers.checkAuthor,
+  userControllers.removeChapter
+)
+
 export default router
