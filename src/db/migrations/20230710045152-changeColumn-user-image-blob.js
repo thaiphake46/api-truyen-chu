@@ -8,7 +8,8 @@ module.exports = {
           'Stories',
           'storyImage',
           {
-            type: Sequelize.DataTypes.BLOB('long'),
+            // type: Sequelize.DataTypes.BLOB('long'),
+            type: Sequelize.DataTypes.TEXT,
           },
           { transaction: t }
         ),

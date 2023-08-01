@@ -1,11 +1,7 @@
 'use strict'
-import 'dotenv/config'
-import bcrypt from 'bcryptjs' /* bcryptjs */
-import multer from 'multer' /* multer */
-import slugify from 'slugify'
-import * as db from '../db/models/index.js'
+import bcrypt from 'bcryptjs'
+import multer from 'multer'
 import * as userServices from '../services/user.service.js'
-import * as storyServices from '../services/story.service.js'
 import * as tokenServices from '../services/tokens.service.js'
 import imageFilter from '../helpers/imageFilter.js'
 
@@ -119,205 +115,6 @@ export const getProfile = async (req, res) => {
   }
 }
 
-export const createStory = async (req, res) => {
-  const { storyName } = req.body
-  const imageStringBase64 = `data:${
-    req.file.mimetype
-  };base64,${req.file.buffer.toString('base64')}`
-
-  const condition = storyName
-  if (!condition) {
-    return res.status(400).json({
-      errCode: 1,
-      status: 'Error',
-      message: 'Chưa điền đủ thông tin',
-    })
-  }
-
-  const payload = {
-    storySlug: slugify(storyName, { lower: true, locale: 'vi' }),
-    storyImage: imageStringBase64,
-    storyName: storyName,
-    userId: req.user.sub,
-  }
-
-  /* create a new story */
-  try {
-    await storyServices.createANewStory(payload)
-    return res.status(201).json({
-      errCode: 0,
-      status: 'OK',
-    })
-  } catch (error) {
-    console.log({ error })
-    return res.sendStatus(500)
-  }
-}
-
-export const editStory = async (req, res) => {
-  const { storyName } = req.body
-  const imageStringBase64 = `data:${
-    req.file.mimetype
-  };base64,${req.file.buffer.toString('base64')}`
-
-  const condition = storyName
-  if (!condition) {
-    return res.status(400).json({
-      errCode: 1,
-      status: 'Error',
-      message: 'Chưa điền đủ thông tin',
-    })
-  }
-
-  const payload = {
-    storySlug: slugify(req.body.storyName),
-    storyImage: imageStringBase64,
-    storyName: req.body.storyName,
-    userId: req.user.sub,
-  }
-
-  /* update story info to db */
-  try {
-    const story = await storyServices.findStoryByIdAndUserId(
-      req.params.id /* id story */,
-      req.user.sub /* id user author */
-    )
-    if (story) {
-      Object.assign(story, payload)
-      await story.save()
-      return res.status(201).json({
-        errCode: 0,
-        status: 'OK',
-      })
-    } else {
-      return res
-        .status(404)
-        .json({ errCode: 1, message: 'Không tìm thấy truyện cần sửa' })
-    }
-  } catch (error) {
-    console.log({ error })
-    return res.sendStatus(500)
-  }
-}
-
-export const removeStory = async (req, res) => {
-  try {
-    /* userId */
-    const story = await storyServices.findStoryByIdAndUserId(
-      req.params.id /* id story */,
-      req.user.sub /* id user author */
-    )
-    if (story) {
-      await story.destroy()
-      return res.status(200).json({ errCode: 0, message: 'OK' })
-    } else {
-      return res
-        .status(404)
-        .json({ errCode: 1, message: 'Không tìm thấy truyện cần xóa' })
-    }
-  } catch (error) {
-    console.log({ error })
-    return res.sendStatus(500)
-  }
-}
-
-export const createChapter = async (req, res) => {
-  /* 
-  - chapterSlug
-  - chapterNumber
-  - chapterName
-  - chapterContent
-  - storyId
-  */
-  const { chapterNumber, chapterName, chapterContent, storyId } = req.body
-  const condition = chapterNumber || chapterName || chapterContent || storyId
-  if (!condition) {
-    return res.status(400).json({
-      errCode: 1,
-      status: 'Error',
-      message: 'Chưa điền đủ thông tin',
-    })
-  }
-
-  const payload = {
-    chapterSlug: slugify(chapterName, { lower: true, locale: 'vi' }),
-    chapterNumber: chapterNumber,
-    chapterName: chapterName,
-    chapterContent: chapterContent,
-    storyId: storyId,
-  }
-
-  try {
-    await storyServices.createANewChapter(payload)
-    return res.status(201).json({
-      errCode: 0,
-      status: 'OK',
-    })
-  } catch (error) {
-    console.log({ error })
-    return res.sendStatus(500)
-  }
-}
-
-export const editChapter = async (req, res) => {
-  const chapterId = req.params.chapterId
-  const storyId = req.params.storyId
-
-  const { chapterNumber, chapterName, chapterContent } = req.body
-
-  const condition = chapterNumber || chapterName || chapterContent
-  if (!condition) {
-    return res.status(400).json({
-      errCode: 1,
-      status: 'Error',
-      message: 'Chưa điền đủ thông tin',
-    })
-  }
-
-  const payload = {
-    chapterSlug: slugify(chapterName, { lower: true, locale: 'vi' }),
-    chapterNumber: chapterNumber,
-    chapterName: chapterName,
-    chapterContent: chapterContent,
-  }
-
-  try {
-    await storyServices.editChapter(chapterId, storyId, payload)
-    return res.status(200).json({
-      errCode: 0,
-      status: 'OK',
-    })
-  } catch (error) {
-    console.log({ error })
-    return res.sendStatus(500)
-  }
-}
-
-export const removeChapter = async (req, res) => {
-  const chapterId = req.params.chapterId
-  const storyId = req.params.storyId
-
-  try {
-    await storyServices.removeChapter(chapterId, storyId)
-    return res.status(200).json({
-      errCode: 0,
-      status: 'OK',
-    })
-  } catch (error) {
-    console.log({ error })
-    return res.sendStatus(500)
-  }
-}
-
-export const getStoryPostedByAuthor = async (req, res) => {
-  try {
-    const storyAuthor = await storyServices.getStoryPostedByAuthor(req.user.sub)
-    res.json({ storyAuthor: storyAuthor })
-  } catch (error) {
-    return res.sendStatus(500)
-  }
-}
-
 export const handleErrorImageUpload = (req, res, next) => {
   const upload = multer({
     storage: multer.memoryStorage(),
@@ -345,7 +142,7 @@ export const checkAuthor = async (req, res, next) => {
   const user = await userServices.findUserById(sub).catch((error) => {
     return req.status(500).json({ error: error })
   })
-  if (!user.isAuthor) {
+  if (!user?.isAuthor) {
     return res
       .status(403)
       .json({ errCode: 1, message: 'Bạn không có quyền truy cập' })
