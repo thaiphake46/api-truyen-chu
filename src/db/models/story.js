@@ -10,11 +10,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Story.hasMany(models.Chapter, { as: 'chapters' })
+
       Story.belongsTo(models.User, {
         foreignKey: 'userId',
-        as: 'getStoryAuthor',
+        as: 'storyAuthor',
       })
-      Story.hasMany(models.Chapter)
     }
   }
   Story.init(

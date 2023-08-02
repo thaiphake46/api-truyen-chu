@@ -12,7 +12,6 @@ export const createStory = async (req, res) => {
   const condition = storyName
   if (!condition) {
     return res.status(400).json({
-      errorCode: 1,
       status: 'Error',
       message: 'Chưa điền đủ thông tin',
     })
@@ -29,9 +28,7 @@ export const createStory = async (req, res) => {
   try {
     const result = await storyServices.createANewStory(payload)
     return res.status(201).json({
-      errorCode: result.errorCode,
       status: result.status,
-      message: result.message,
     })
   } catch (error) {
     console.log({ error })
@@ -54,9 +51,7 @@ export const editImageStory = async (req, res) => {
     const userId = req.user.sub
     const result = await storyServices.updateStory(storyId, userId, payload)
     return res.json({
-      errorCode: result.errorCode,
       status: result.status,
-      message: result.message,
     })
   } catch (error) {
     console.log({ error })
@@ -70,7 +65,6 @@ export const editInfoStory = async (req, res) => {
   const condition = storyName
   if (!condition) {
     return res.status(400).json({
-      errorCode: 1,
       status: 'Error',
       message: 'Chưa điền đủ thông tin',
     })
@@ -87,9 +81,7 @@ export const editInfoStory = async (req, res) => {
     const userId = req.user.sub
     const result = await storyServices.updateStory(storyId, userId, payload)
     return res.json({
-      errorCode: result.errorCode,
       status: result.status,
-      message: result.message,
     })
   } catch (error) {
     console.log({ error })
@@ -103,9 +95,7 @@ export const removeStory = async (req, res) => {
   try {
     const result = await storyServices.removeStory(storyId, userId)
     return res.json({
-      errorCode: result.errorCode,
       status: result.status,
-      message: result.message,
     })
   } catch (error) {
     console.log({ error })
@@ -119,7 +109,6 @@ export const createChapter = async (req, res) => {
 
   if (!condition) {
     return res.status(400).json({
-      errorCode: 1,
       status: 'Error',
       message: 'Chưa điền đủ thông tin',
     })
@@ -129,7 +118,6 @@ export const createChapter = async (req, res) => {
     const result = await storyServices.findStoryById(storyId)
     if (!result.data) {
       return res.json({
-        errorCode: result.errorCode,
         status: result.status,
         message: result.message,
       })
@@ -149,9 +137,7 @@ export const createChapter = async (req, res) => {
   try {
     const result = await storyServices.createANewChapter(payload)
     return res.status(201).json({
-      errorCode: result.errorCode,
       status: result.status,
-      message: result.message,
     })
   } catch (error) {
     console.log({ error })
@@ -182,9 +168,7 @@ export const editChapter = async (req, res) => {
   try {
     const result = await storyServices.editChapter(chapterId, storyId, payload)
     return res.status(200).json({
-      errorCode: result.errorCode,
       status: result.status,
-      message: result.message,
     })
   } catch (error) {
     console.log({ error })
@@ -199,9 +183,7 @@ export const removeChapter = async (req, res) => {
   try {
     const result = await storyServices.removeChapter(chapterId, storyId)
     return res.status(200).json({
-      errorCode: result.errorCode,
       status: result.status,
-      message: result.message,
     })
   } catch (error) {
     console.log({ error })
@@ -212,7 +194,10 @@ export const removeChapter = async (req, res) => {
 export const getStoryPostedByAuthor = async (req, res) => {
   try {
     const result = await storyServices.getStoryPostedByAuthor(req.user.sub)
-    return res.json({ ...result })
+    return res.json({
+      status: result.status,
+      result: result.data,
+    })
   } catch (error) {
     console.log(error)
     return res.sendStatus(500)
@@ -224,9 +209,21 @@ export const guestGetRandomListStoryName = async (req, res) => {
   try {
     const result = await storyServices.guestGetRandomListStoryName(limit)
     return res.json({
-      errorCode: result.errorCode,
       status: result.status,
-      message: result.message,
+      result: result.data,
+    })
+  } catch (error) {
+    console.log(error)
+    return res.sendStatus(500)
+  }
+}
+
+export const guestGetAStoryAndListChapter = async (req, res) => {
+  const storySlug = req.params.storySlug
+  try {
+    const result = await storyServices.findStoryAndChapterByStorySlug(storySlug)
+    return res.json({
+      status: result.status,
       result: result.data,
     })
   } catch (error) {

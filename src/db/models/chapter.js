@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Chapter.belongsTo(models.Story, {
         foreignKey: 'storyId',
-        as: 'getChapterByStoryId',
+        as: 'chapters',
       })
     }
   }

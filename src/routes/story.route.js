@@ -72,4 +72,6 @@ router.get(
   storyControllers.guestGetRandomListStoryName
 )
 
+router.get('/:storySlug', storyControllers.guestGetAStoryAndListChapter)
+
 export default router

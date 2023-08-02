@@ -71,11 +71,10 @@ export const createANewChapter = (payload) => {
       const maxChapter = await db.Chapter.max('chapterNumber', {
         where: { storyId: payload.storyId },
       })
+      const maxIdChapter = await db.Chapter.max('id')
       Object.assign(payload, {
         chapterNumber: maxChapter + 1,
-        chapterSlug: `${payload.storyId}-${maxChapter + 1}-${
-          payload.chapterSlug
-        }`,
+        chapterSlug: `${maxIdChapter + 1}-${payload.chapterSlug}`,
       })
       const chapter = await db.Chapter.create(payload)
       const isCreateOk = !!chapter
@@ -151,6 +150,43 @@ export const findStoryById = (id) => {
   })
 }
 
+export const findStoryAndChapterByStorySlug = (storySlug) => {
+  return new Promise(async (resolve, reject) => {
+    const result = {}
+    try {
+      const story = await db.Story.findOne({
+        where: { storySlug },
+        attributes: {
+          exclude: ['userId', 'UserId'],
+        },
+        include: [
+          {
+            model: db.User,
+            as: 'storyAuthor',
+            attributes: ['username'],
+          },
+          {
+            model: db.Chapter,
+            as: 'chapters',
+            attributes: { exclude: ['storyId', 'StoryId', 'createdAt'] },
+          },
+        ],
+        nest: true,
+      })
+      const isFound = !!story
+      Object.assign(result, {
+        data: isFound ? story.toJSON() : story,
+        errorCode: isFound ? 0 : 1,
+        status: isFound ? 'OK' : 'Error',
+        message: isFound ? 'OK' : 'Không tìm thấy truyện',
+      })
+      resolve(result)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
 export const getStoryPostedByAuthor = (userId) => {
   return new Promise(async (resolve, reject) => {
     const result = {}
@@ -195,18 +231,37 @@ export const guestGetRandomListStoryName = (limit = 10) => {
         order: db.sequelize.random(),
         limit: +limit,
         attributes: {
-          exclude: ['createdAt', 'updatedAt', 'userId', 'UserId'],
+          exclude: ['userId', 'UserId'],
         },
         include: [
           {
             model: db.User,
-            as: 'getStoryAuthor',
+            as: 'storyAuthor',
             attributes: ['username'],
           },
         ],
         nest: true,
       })
       const isFound = !!listStoryName
+      Object.assign(result, {
+        data: isFound ? listStoryName : listStoryName,
+        errorCode: isFound ? 0 : 1,
+        status: isFound ? 'OK' : 'Error',
+        message: isFound ? 'OK' : 'Không tìm thấy truyện',
+      })
+      resolve(result)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+export const guestGetListChapterName = (storySlug) => {
+  return new Promise(async (resolve, reject) => {
+    const result = {}
+    try {
+      const listChapter = await db.Chapter.findAll({ where: { storySlug } })
+      const isFound = !!listChapter
       Object.assign(result, {
         data: isFound ? listStoryName : listStoryName,
         errorCode: isFound ? 0 : 1,
