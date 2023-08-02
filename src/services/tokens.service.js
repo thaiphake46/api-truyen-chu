@@ -1,15 +1,20 @@
 'use strict'
 import jwt from 'jsonwebtoken'
 
+const oneMinute = 1000 * 60
+const oneDay = 1000 * 60 * 60 * 24
+const expiresInAccessToken = 10 // mm: phút
+const expiresInRefreshToken = 7 // dd: ngày
+
 export const generateAccessToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-    expiresIn: '7d',
+    expiresIn: `${expiresInAccessToken}m`,
   })
 }
 
 export const generateRefreshToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-    expiresIn: '7d',
+    expiresIn: `${expiresInRefreshToken}d`,
   })
 }
 
@@ -20,7 +25,10 @@ export const verifyAccessToken = (req, res, next) => {
     return res.sendStatus(401)
   }
   jwt.verify(token, process.env.JWT_SECRET_KEY, (error, decoded) => {
-    if (error) {
+    const timeBeetwen = (decoded.exp - decoded.iat) * 1000
+    const minutesDiff =
+      Math.floor(timeBeetwen / oneMinute) === expiresInAccessToken
+    if (error || !minutesDiff) {
       return res.sendStatus(403)
     }
     req.user = decoded
@@ -34,7 +42,10 @@ export const verifyRefreshToken = (req, res, next) => {
     return res.sendStatus(401)
   }
   jwt.verify(token, process.env.JWT_SECRET_KEY, (error, decoded) => {
-    if (error) {
+    const timeBeetwen = (decoded.exp - decoded.iat) * 1000
+    const daysDiff = Math.floor(timeBeetwen / oneDay) === expiresInRefreshToken
+    console.log(daysDiff)
+    if (error || !daysDiff) {
       return res.sendStatus(403)
     }
     req.user = decoded
