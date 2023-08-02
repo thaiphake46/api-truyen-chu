@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
 
       Story.belongsTo(models.User, {
         foreignKey: 'userId',
-        as: 'storyAuthor',
+        as: 'author',
       })
     }
   }

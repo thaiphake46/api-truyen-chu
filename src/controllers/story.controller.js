@@ -231,3 +231,17 @@ export const guestGetAStoryAndListChapter = async (req, res) => {
     return res.sendStatus(500)
   }
 }
+
+export const guestGetDetailChapter = async (req, res) => {
+  const { storySlug, chapterSlug } = req.params
+  try {
+    const result = await storyServices.getDetailChapter(storySlug, chapterSlug)
+    return res.json({
+      status: result.status,
+      result: result.data,
+    })
+  } catch (error) {
+    console.log(error)
+    return res.sendStatus(500)
+  }
+}

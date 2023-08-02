@@ -74,4 +74,6 @@ router.get(
 
 router.get('/:storySlug', storyControllers.guestGetAStoryAndListChapter)
 
+router.get('/:storySlug/:chapterSlug', storyControllers.guestGetDetailChapter)
+
 export default router

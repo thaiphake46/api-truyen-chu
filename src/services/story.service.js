@@ -162,13 +162,15 @@ export const findStoryAndChapterByStorySlug = (storySlug) => {
         include: [
           {
             model: db.User,
-            as: 'storyAuthor',
+            as: 'author',
             attributes: ['username'],
           },
           {
             model: db.Chapter,
             as: 'chapters',
-            attributes: { exclude: ['storyId', 'StoryId', 'createdAt'] },
+            attributes: {
+              exclude: ['chapterContent', 'storyId', 'StoryId', 'createdAt'],
+            },
           },
         ],
         nest: true,
@@ -201,6 +203,7 @@ export const getStoryPostedByAuthor = (userId) => {
         include: [
           {
             model: db.Story,
+            as: 'stories',
             attributes: {
               exclude: ['UserId', 'createdAt'],
             },
@@ -236,7 +239,7 @@ export const guestGetRandomListStoryName = (limit = 10) => {
         include: [
           {
             model: db.User,
-            as: 'storyAuthor',
+            as: 'author',
             attributes: ['username'],
           },
         ],
@@ -256,14 +259,34 @@ export const guestGetRandomListStoryName = (limit = 10) => {
   })
 }
 
-export const guestGetListChapterName = (storySlug) => {
+export const getDetailChapter = (storySlug, chapterSlug) => {
   return new Promise(async (resolve, reject) => {
     const result = {}
     try {
-      const listChapter = await db.Chapter.findAll({ where: { storySlug } })
+      const listChapter = await db.Story.findOne({
+        where: { storySlug },
+        attributes: ['storySlug', 'storyName'],
+        include: [
+          {
+            model: db.User,
+            as: 'author',
+            attributes: ['username'],
+          },
+          {
+            model: db.Chapter,
+            as: 'chapters',
+            attributes: {
+              exclude: [, 'storyId', 'StoryId', 'createdAt'],
+            },
+            where: { chapterSlug },
+          },
+        ],
+        raw: true,
+        nest: true,
+      })
       const isFound = !!listChapter
       Object.assign(result, {
-        data: isFound ? listStoryName : listStoryName,
+        data: isFound ? listChapter : listChapter,
         errorCode: isFound ? 0 : 1,
         status: isFound ? 'OK' : 'Error',
         message: isFound ? 'OK' : 'Không tìm thấy truyện',
