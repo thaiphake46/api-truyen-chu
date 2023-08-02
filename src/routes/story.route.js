@@ -67,4 +67,9 @@ router.get(
   storyControllers.getStoryPostedByAuthor
 )
 
+router.get(
+  '/guestGetRandomListStoryName',
+  storyControllers.guestGetRandomListStoryName
+)
+
 export default router

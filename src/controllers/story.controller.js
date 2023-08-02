@@ -214,6 +214,23 @@ export const getStoryPostedByAuthor = async (req, res) => {
     const result = await storyServices.getStoryPostedByAuthor(req.user.sub)
     return res.json({ ...result })
   } catch (error) {
+    console.log(error)
+    return res.sendStatus(500)
+  }
+}
+
+export const guestGetRandomListStoryName = async (req, res) => {
+  const limit = req.query.limit
+  try {
+    const result = await storyServices.guestGetRandomListStoryName(limit)
+    return res.json({
+      errorCode: result.errorCode,
+      status: result.status,
+      message: result.message,
+      result: result.data,
+    })
+  } catch (error) {
+    console.log(error)
     return res.sendStatus(500)
   }
 }
