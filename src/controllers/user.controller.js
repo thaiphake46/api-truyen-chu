@@ -1,6 +1,5 @@
 'use strict'
 import bcrypt from 'bcryptjs'
-import multer from 'multer'
 import * as userServices from '../services/user.service.js'
 import * as tokenServices from '../services/tokens.service.js'
 
@@ -132,4 +131,21 @@ export const refreshToken = async (req, res) => {
   res.json({
     accessToken: tokenServices.generateAccessToken({ sub, isAuthor }),
   })
+}
+
+export const changePW = async (req, res) => {
+  const salt = bcrypt.genSaltSync(10)
+  const hashPw = bcrypt.hashSync(req.body.password, salt)
+  try {
+    const result = await userServices.changePassword({
+      userId: req.user.sub,
+      password: hashPw,
+    })
+    return res.json({
+      status: result.status,
+    })
+  } catch (error) {
+    console.log(error)
+    return res.sendStatus(500)
+  }
 }
