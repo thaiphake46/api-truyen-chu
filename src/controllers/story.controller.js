@@ -47,7 +47,7 @@ export const editImageStory = async (req, res) => {
 
   /* update story info to db */
   try {
-    const storyId = req.params.id
+    const storyId = req.params.storyId
     const userId = req.user.sub
     const result = await storyServices.updateStory(storyId, userId, payload)
     return res.json({
@@ -77,7 +77,7 @@ export const editInfoStory = async (req, res) => {
 
   /* update story info to db */
   try {
-    const storyId = req.params.id
+    const storyId = req.params.storyId
     const userId = req.user.sub
     const result = await storyServices.updateStory(storyId, userId, payload)
     return res.json({
@@ -90,7 +90,7 @@ export const editInfoStory = async (req, res) => {
 }
 
 export const removeStory = async (req, res) => {
-  const storyId = req.params.id
+  const storyId = req.params.storyId
   const userId = req.user.sub
   try {
     const result = await storyServices.removeStory(storyId, userId)

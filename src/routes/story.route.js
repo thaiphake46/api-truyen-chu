@@ -17,7 +17,7 @@ router.post(
 )
 
 router.patch(
-  '/patch/image-story/:id',
+  '/patch/image-story/:storyId',
   verifyAccessToken,
   checkAuthor,
   handleErrorImageUpload,
@@ -25,14 +25,14 @@ router.patch(
 )
 
 router.patch(
-  '/patch/info-story/:id',
+  '/patch/info-story/:storyId',
   verifyAccessToken,
   checkAuthor,
   storyControllers.editInfoStory
 )
 
 router.delete(
-  '/delete/story/:id',
+  '/delete/story/:storyId',
   verifyAccessToken,
   checkAuthor,
   storyControllers.removeStory
